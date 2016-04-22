@@ -2,6 +2,7 @@
 
 const moment = require('moment-timezone');
 const schema = require('validate');
+const _ = require('lodash');
 const auth = require('./lib/auth');
 const request = require('./lib/request');
 const utils = require('./lib/utils');
@@ -28,6 +29,16 @@ module.exports = function sdkFactory(config) {
             required: true,
             message: 'apiSecret is required',
         },
+        origin: {
+            type: 'string',
+            required: true,
+            message: 'origin host is required',
+        },
+        companyCode: {
+            type: 'string',
+            required: true,
+            message: 'companyCode is required',
+        },
     });
 
     const baseUrl = config.baseUrl || 'https://api.finhacks.id'
@@ -37,7 +48,7 @@ module.exports = function sdkFactory(config) {
         throw errors.shift();
     }
 
-    return {
+    let returnValue = {
         token(done) {
             const creds = new Buffer(config.clientId + ':' + config.clientSecret);
             const header = {
@@ -58,67 +69,10 @@ module.exports = function sdkFactory(config) {
 
             return request.makeRequest(requestConfig, done);
         },
-
-        register(userData, token, done) {
-            const validSchema = schema({
-                CustomerName: {
-                    type: 'string',
-                    required: true,
-                    message: 'CustomerName is required',
-                },
-                PrimaryID: {
-                    type: 'string',
-                    required: true,
-                    message: 'PrimaryID is required',
-                },
-                MobileNumber: {
-                    type: 'string',
-                    required: true,
-                    message: 'MobileNumber is required',
-                },
-                CompanyCode: {
-                    type: 'string',
-                    required: true,
-                    message: 'CompanyCode is required',
-                },
-                CustomerNumber: {
-                    type: 'string',
-                    required: true,
-                    message: 'CustomerNumber is required',
-                },
-            });
-
-            const errors = validSchema.validate(userData);
-            if (errors.length > 1) {
-                return done(errors.shift());
-            }
-
-            const url = baseUrl + '/ewallet/customers';
-            const headerOpt = {
-                url,
-                token,
-                apiKey: config.apiKey,
-                apiSecret: config.apiSecret,
-                body: JSON.stringify(userData),
-                method: 'POST',
-            };
-
-            const boundFn = request.generateHeader.bind(null, headerOpt);
-            const headers = utils.handleTryCatch(boundFn);
-
-            if (headers.error) {
-                return done(headers.error);
-            }
-
-            const requestOpt = {
-                url,
-                header: headers.value,
-                method: 'POST',
-                body: userData,
-            };
-
-            return request.makeRequest(requestOpt, done);
-        }
     };
+
+    returnValue = _.assign(returnValue, { user: require('./lib/user')(config) });
+
+    return returnValue;
 };
 
