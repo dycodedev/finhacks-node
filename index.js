@@ -48,7 +48,7 @@ module.exports = function sdkFactory(config) {
         throw errors.shift();
     }
 
-    let returnValue = {
+    return {
         token(done) {
             const creds = new Buffer(config.clientId + ':' + config.clientSecret);
             const header = {
@@ -69,10 +69,9 @@ module.exports = function sdkFactory(config) {
 
             return request.makeRequest(requestConfig, done);
         },
+
+        user: require('./lib/user')(config),
+        payment: require('./lib/payment')(config),
     };
-
-    returnValue = _.assign(returnValue, { user: require('./lib/user')(config) });
-
-    return returnValue;
 };
 
