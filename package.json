@@ -1,0 +1,21 @@
+{
+  "name": "finhacks-node",
+  "version": "1.0.0",
+  "description": "finhacks SDK for node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "finhacks",
+    "sdk"
+  ],
+  "author": "Alwin Arrasyid <winter@dycode.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.11.1",
+    "moment-timezone": "^0.5.3",
+    "superagent": "^1.8.3",
+    "validate": "^3.0.1"
+  }
+}
