@@ -72,6 +72,7 @@ module.exports = function sdkFactory(config) {
 
         user: require('./lib/user')(config),
         payment: require('./lib/payment')(config),
+        transaction: require('./lib/transact')(config),
     };
 };
 
